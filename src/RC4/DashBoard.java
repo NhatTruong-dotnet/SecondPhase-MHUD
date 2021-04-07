@@ -5,6 +5,10 @@
  */
 package RC4;
 
+import java.util.Arrays;
+import javax.swing.JTextArea;
+import static sun.util.calendar.CalendarUtils.mod;
+
 /**
  *
  * @author tbui48
@@ -17,7 +21,8 @@ public class DashBoard extends javax.swing.JFrame {
     public DashBoard() {
         initComponents();
     }
-
+    int[] S = new int[256] ;
+    String[] T = new String[256];
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -53,6 +58,11 @@ public class DashBoard extends javax.swing.JFrame {
         jScrollPane1.setViewportView(tareaEncryptionResult);
 
         btnEncryption.setText("Encryption");
+        btnEncryption.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEncryptionActionPerformed(evt);
+            }
+        });
 
         jLabel3.setText("Cipher Text");
 
@@ -140,6 +150,13 @@ public class DashBoard extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
+    private void btnEncryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEncryptionActionPerformed
+        initS_and_T_Array();
+
+       
+    }//GEN-LAST:event_btnEncryptionActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -174,6 +191,55 @@ public class DashBoard extends javax.swing.JFrame {
             }
         });
     }
+        private void initS_and_T_Array(){
+            String key = txtKeyEncryption.getText();
+            String[] keyArray = key.split("");
+            int modForFill = 256 % key.length();
+            int repeatToFill = 256 / key.length();
+            
+            if(repeatToFill != 0){
+                for(int index = 0; index < 256;){
+                    while(repeatToFill > 0) {
+                        for(int indexT = 0; indexT < key.length(); indexT++){
+                            T[index] = keyArray[indexT];
+                            S[index] = index;
+                            index++;
+                        }
+                        repeatToFill--;
+                    }
+                    if(index > 255){
+                        return;
+                    }
+                    else{
+                        S[index] = index;
+                        index++;
+                    }
+                }
+            
+                repeatToFill = 256 / key.length();    
+                for(int index = 0; index < modForFill; index++){
+                    int currentIndexToInsert = repeatToFill*keyArray.length + index;
+                    T[currentIndexToInsert] = keyArray[index];
+                }
+            }
+            else{
+                for(int index = 0; index < 256;index++){
+                    S[index] = index;
+                }
+                T = keyArray;
+            }
+        }
+        
+        private void permutatesS(){
+            int j =0;
+            for(int index = 0; index < 256; index++){
+                int temp = Integer.parseInt(T[index]);
+                j = (j + S[index] +  temp) % 256;
+                temp = S[index];
+                S[index] = S[j];
+                S[j] = temp;
+            }
+        }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDecryption;
