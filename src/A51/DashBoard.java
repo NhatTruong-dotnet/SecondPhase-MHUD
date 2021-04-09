@@ -16,6 +16,169 @@ public class DashBoard extends javax.swing.JFrame {
      */
     public DashBoard() {
         initComponents();
+          public static String convertToBinary(String input) { //hàm chuyển đổi chuỗi kí tự thành nhị phân (bao gồm chuỗi số) - kh nên để chuỗi vừa chữ vừa số.
+        try{
+            int a = Integer.parseInt(input);
+            
+            return Integer.toBinaryString(a);
+        }
+        catch(Exception e)
+        {
+             StringBuilder result = new StringBuilder();
+            char[] chars = input.toCharArray();
+              for (char aChar : chars) {
+             result.append(String.format("%8s", Integer.toBinaryString(aChar)).replaceAll(" ", "0")  );    // char -> int, auto-cast
+
+        }
+               return result.toString();  
+        }
+            
+    }
+    
+    public static String prettyBinary(String binary, int blockSize, String separator) { // hàm tách ra dãy nhị phân 8 bit
+
+        List<String> result = new ArrayList<>();
+        int index = 0;
+        while (index < binary.length()) {
+            result.add(binary.substring(index, Math.min(index + blockSize, binary.length())));
+            index += blockSize;
+        }
+
+        return result.stream().collect(Collectors.joining(separator));
+    }
+    public static boolean isNumeric(String str) { 
+  try {  
+    Double.parseDouble(str);  
+    return true;
+  } catch(NumberFormatException e){  
+    return false;  
+  }  
+}
+
+    public static String tinhXOR(String a,String b) // hàm tính XOR(2 số)
+    {
+         StringBuilder result = new StringBuilder();
+      
+            char[] charsA = a.toCharArray();
+            char[] charsB = b.toCharArray();
+             for (int i = 0; i <= a.length()-1; i++) {
+                    if(charsA[i] == '0' || charsA[i] == '1' ||charsB[i] == '0' || charsB[i] == '1')
+                    {
+                    try
+                    {
+                         if(charsA[i] == charsB[i]){
+                            result.append("1");
+                        }
+                        else{
+                            result.append("0");
+                        }
+                    }
+                    catch(Exception e){
+                           System.err.println(e);
+                    }
+                    }
+                    else{
+                         JOptionPane.showMessageDialog(frame,"Vui lòng chỉ nhập số 0,1");
+                         break;
+                    }
+            }
+        
+        
+        return result.toString();  
+    }
+    public static boolean checkXOR(char a,char b)
+    {
+        if(a == b)
+            return true;
+        else
+            return false;
+    }
+    public static String major(String x, String y,String z){
+         String[] mangX = x.split("");
+         String[] mangY = y.split("");
+         String[] mangZ = z.split("");
+         String m;
+         if(mangX[8].equals(mangY[10]))
+         {
+             m = mangX[8];
+         }
+         else if(mangX[8].equals(mangZ[10]))
+         {
+             m = mangX[8];
+         }
+         else{
+             m = mangY[10];
+         }
+         if(m.equals("0"))
+         {
+             if(mangX[8].equals("0")){
+                  x = RotateX(x);
+                mangX = x.split("");}
+             if(mangY[10].equals("0")){
+              y= RotateY(y);
+                 mangY = y.split("");}
+             if(mangZ[10].equals("0")){
+                 z =RotateZ(z);
+                 mangZ=z.split("");}
+         }
+         else{
+             if(mangX[8].equals("1")){
+                x = RotateX(x);
+                mangX = x.split("");}
+             if(mangY[10].equals("1")){
+                y= RotateY(y);
+                 mangY = y.split("");}
+             if(mangZ[10].equals("1")){
+                   z= RotateZ(z);
+                 mangZ = z.split("");}
+         }
+         String abc =tinhXOR(tinhXOR(mangX[18], mangY[21]),mangZ[22]);
+         return abc;
+    }
+
+    
+    
+    public static String RotateX(String x)
+    {
+        StringBuilder result = new StringBuilder();
+         String[] mangX = x.split("");
+        
+         String t = tinhXOR(tinhXOR(tinhXOR(mangX[13], mangX[16]),mangX[17]),mangX[18]);
+         
+         result.append(t);
+
+         for (int j = 0; j < 18; j++) {
+             result.append(mangX[j]);
+        }
+           System.out.println(result.toString());
+         return result.toString();
+    }
+    public static String RotateY(String y)
+    {
+        StringBuilder result = new StringBuilder();
+         String[] mangY = y.split("");  
+         String t = tinhXOR(mangY[20],mangY[21]);
+         result.append(t);
+
+         for (int j = 0; j < 21; j++) {
+             result.append(mangY[j]);
+        }
+         System.out.println(result.toString());
+         return result.toString();
+    }
+    public static String RotateZ(String z)
+    {
+        StringBuilder result = new StringBuilder();
+         String[] mangZ = z.split("");  
+         String t = tinhXOR(tinhXOR(tinhXOR(mangZ[7], mangZ[20]),mangZ[21]),mangZ[22]);
+         result.append(t);
+
+         for (int j = 0; j < 22; j++) {
+             result.append(mangZ[j]);
+        }
+           System.out.println(result.toString());
+         return result.toString();
+    }
     }
 
     /**
