@@ -5,6 +5,8 @@
  */
 package RC4;
 
+import com.sun.org.apache.bcel.internal.generic.AALOAD;
+import java.awt.dnd.DropTargetDropEvent;
 import java.util.Arrays;
 import javax.swing.JTextArea;
 import static sun.util.calendar.CalendarUtils.mod;
@@ -51,10 +53,15 @@ public class DashBoard extends javax.swing.JFrame {
 
         jLabel1.setText("Plain Text");
 
+        txtPlainText.setDoubleBuffered(true);
+        txtPlainText.setDragEnabled(true);
+
         jLabel2.setText("Key");
 
         tareaEncryptionResult.setColumns(20);
         tareaEncryptionResult.setRows(5);
+        tareaEncryptionResult.setDragEnabled(true);
+        tareaEncryptionResult.setDropMode(javax.swing.DropMode.INSERT);
         jScrollPane1.setViewportView(tareaEncryptionResult);
 
         btnEncryption.setText("Encryption");
@@ -153,8 +160,7 @@ public class DashBoard extends javax.swing.JFrame {
     
     private void btnEncryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEncryptionActionPerformed
         initS_and_T_Array();
-
-       
+       DropTargetDropEvent 
     }//GEN-LAST:event_btnEncryptionActionPerformed
 
     /**
@@ -183,7 +189,7 @@ public class DashBoard extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(DashBoard.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+         
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
