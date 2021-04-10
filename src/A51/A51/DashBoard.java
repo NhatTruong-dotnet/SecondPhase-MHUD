@@ -64,15 +64,15 @@ public class DashBoard extends javax.swing.JFrame {
   }  
 }
 
-    public static String tinhXOR(String a,String b)
+     public static String tinhXOR(String a,String b)
     {
          StringBuilder result = new StringBuilder();
       
             char[] charsA = a.toCharArray();
             char[] charsB = b.toCharArray();
              for (int i = 0; i <= a.length()-1; i++) {
-                    if(charsA[i] == '0' || charsA[i] == '1' ||charsB[i] == '0' || charsB[i] == '1')
-                    {
+                    if((charsA[i] == '0' || charsA[i] == '1') && ((charsB[i] == '0' || charsB[i] == '1'))) 
+                    {   
                     try
                     {
                          if(charsA[i] == charsB[i]){
@@ -87,7 +87,7 @@ public class DashBoard extends javax.swing.JFrame {
                     }
                     }
                     else{
-                         JOptionPane.showMessageDialog(frame,"Vui lòng chỉ nhập số 0,1");
+                         JOptionPane.showMessageDialog(frame,"Vui l?ng ch? nh?p s? 0,1");
                          break;
                     }
             }
@@ -95,14 +95,16 @@ public class DashBoard extends javax.swing.JFrame {
         
         return result.toString();  
     }
-    public static boolean checkXOR(char a,char b)
-    {
-        return a == b;
-    }
-    public static String major(String x, String y,String z){
+        
+        
+       
+ 
+    public static String[] major(String x, String y,String z){
          String[] mangX = x.split("");
          String[] mangY = y.split("");
          String[] mangZ = z.split("");
+         String[] mang = new String[4];
+         
          String m;
          if(mangX[8].equals(mangY[10]))
          {
@@ -139,7 +141,11 @@ public class DashBoard extends javax.swing.JFrame {
                  mangZ = z.split("");}
          }
          String abc =tinhXOR(tinhXOR(mangX[18], mangY[21]),mangZ[22]);
-         return abc;
+         mang[0] = abc;
+         mang[1] = x;
+         mang[2] = y;
+         mang[3] = z;
+         return mang;
     }
      public static String RotateX(String x)
     {
