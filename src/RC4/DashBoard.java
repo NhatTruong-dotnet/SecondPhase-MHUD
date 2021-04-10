@@ -160,7 +160,10 @@ public class DashBoard extends javax.swing.JFrame {
     
     private void btnEncryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEncryptionActionPerformed
         initS_and_T_Array();
-       DropTargetDropEvent 
+       //DropTargetDropEvent 
+       permutatesS();
+       
+       
     }//GEN-LAST:event_btnEncryptionActionPerformed
 
     /**
