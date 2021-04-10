@@ -182,9 +182,6 @@ public class DashBoard extends javax.swing.JFrame {
            System.out.println(result.toString());
          return result.toString();
     }
-    
-
- 
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -341,7 +338,6 @@ public class DashBoard extends javax.swing.JFrame {
             }
         });
     }
-
 
     // Variables declaration - do not modify                     
     private javax.swing.JButton btnDecryption;
