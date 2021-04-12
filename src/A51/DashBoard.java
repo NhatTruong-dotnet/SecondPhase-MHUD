@@ -42,21 +42,32 @@ public class DashBoard extends javax.swing.JFrame {
         initComponents();
     }
     // <editor-fold defaultstate="collapsed" desc="Dau"> 
-    public static String convertToBinary(String input) {
-        try {
-            int a = Integer.parseInt(input);
-
-            return Integer.toBinaryString(a);
-        } catch (Exception e) {
-            StringBuilder result = new StringBuilder();
-            char[] chars = input.toCharArray();
-            for (char aChar : chars) {
-                result.append(String.format("%8s", Integer.toBinaryString(aChar)).replaceAll(" ", "0"));    // char -> int, auto-cast
+    public static String convertPlainTextToBinary(String plainText) {
+        try{
+            int dec = Integer.parseInt(plainText);
+            String result= "00000000";
+            int i=result.length()-1;
+            while(dec!=0)
+            {
+              char a[]=result.toCharArray();
+              a[i--]= String.valueOf(dec%2).charAt(0);
+              result=new String(a);
+              dec=dec/2;  
 
             }
-            return result.toString();
+            return  result;
         }
+        catch(Exception e)
+        {
+             StringBuilder result = new StringBuilder();
+            char[] chars = plainText.toCharArray();
+              for (char aChar : chars) {
+             result.append(String.format("%8s", Integer.toBinaryString(aChar)).replaceAll(" ", "0")  );    // char -> int, auto-cast
 
+        }
+               return result.toString();  
+        }
+            
     }
     public static String prettyBinary(String binary, int blockSize, String separator) {
 
