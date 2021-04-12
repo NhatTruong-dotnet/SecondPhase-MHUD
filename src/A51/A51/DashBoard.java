@@ -25,6 +25,9 @@ public class DashBoard extends javax.swing.JFrame {
     public DashBoard() {
         initComponents(); 
     }
+    
+    
+    
     public static String convertToBinary(String input) {
         try{
             int a = Integer.parseInt(input);
@@ -74,17 +77,13 @@ public class DashBoard extends javax.swing.JFrame {
                     if(charsA[i] == '0' || charsA[i] == '1' ||charsB[i] == '0' || charsB[i] == '1')
                     {
                     try
-                    {
-                         if(charsA[i] == charsB[i]){
-                            result.append("1");
-                        }
-                        else{
-                            result.append("0");
-                        }
-                    }
-                    catch(Exception e){
-                           System.err.println(e);
-                    }
+                            {
+                                result.append(charsA[i] ^ charsB[i]);
+                            }
+                            catch(Exception e){
+                                   System.err.println(e);
+                            }
+                    
                     }
                     else{
                          JOptionPane.showMessageDialog(frame,"Vui lòng chỉ nhập số 0,1");
@@ -99,11 +98,12 @@ public class DashBoard extends javax.swing.JFrame {
     {
         return a == b;
     }
-    public static String major(String x, String y,String z){
+    public static String[] major(String x, String y,String z){
          String[] mangX = x.split("");
          String[] mangY = y.split("");
          String[] mangZ = z.split("");
          String m;
+         String[] mang = new String[4];
          if(mangX[8].equals(mangY[10]))
          {
              m = mangX[8];
@@ -139,10 +139,15 @@ public class DashBoard extends javax.swing.JFrame {
                  mangZ = z.split("");}
          }
          String abc =tinhXOR(tinhXOR(mangX[18], mangY[21]),mangZ[22]);
-         return abc;
+         mang[0] = abc;
+         mang[1] = x;
+         mang[2] = y;
+         mang[3] = z;
+         return mang;
     }
      public static String RotateX(String x)
     {
+
         StringBuilder result = new StringBuilder();
          String[] mangX = x.split("");
         
@@ -153,7 +158,7 @@ public class DashBoard extends javax.swing.JFrame {
          for (int j = 0; j < 18; j++) {
              result.append(mangX[j]);
         }
-           System.out.println(result.toString());
+
          return result.toString();
     }
     public static String RotateY(String y)
@@ -166,7 +171,7 @@ public class DashBoard extends javax.swing.JFrame {
          for (int j = 0; j < 21; j++) {
              result.append(mangY[j]);
         }
-         System.out.println(result.toString());
+//         System.out.println("Y " + result.toString());
          return result.toString();
     }
     public static String RotateZ(String z)
@@ -179,7 +184,7 @@ public class DashBoard extends javax.swing.JFrame {
          for (int j = 0; j < 22; j++) {
              result.append(mangZ[j]);
         }
-           System.out.println(result.toString());
+//           System.out.println("Z  " + result.toString());
          return result.toString();
     }
     
@@ -222,12 +227,22 @@ public class DashBoard extends javax.swing.JFrame {
         jLabel2.setText("Key");
 
         btnDecryption.setText("Decryption");
+        btnDecryption.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDecryptionActionPerformed(evt);
+            }
+        });
 
         tareaEncryptionResult.setColumns(20);
         tareaEncryptionResult.setRows(5);
         jScrollPane1.setViewportView(tareaEncryptionResult);
 
         btnEncryption.setText("Encryption");
+        btnEncryption.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEncryptionActionPerformed(evt);
+            }
+        });
 
         jLabel3.setText("Cipher Text");
 
@@ -306,6 +321,80 @@ public class DashBoard extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    private String generateStreamKey(int length, String K){
+        String streamKey = "";
+        
+        String X, Y, Z;
+        try{
+            if(K.contains(".")){
+            String [] arrayXYZ = K.split(".");
+            X = arrayXYZ[0];
+            Y = arrayXYZ[1];
+            Z = arrayXYZ[2];
+            }
+            else{
+                X = K.substring(0, 19);
+                Y = K.substring(19, 41);
+                Z = K.substring(41);
+            }
+            if(X.length() != 19 || Y.length() != 22 || Z.length() !=23)
+            {
+                JOptionPane.showMessageDialog(frame,"Key invalid");
+            }
+
+            for(int i = 0; i < length; i++){
+                String[] arr;
+                arr = major(X,Y,Z);
+                
+                streamKey += arr[0];
+                X = arr[1];
+                Y = arr[2];
+                Z = arr[3];
+            }
+            
+        }
+        catch(Exception e){
+            JOptionPane.showMessageDialog(frame,"Key invalid");
+        }
+        return streamKey;
+    }
+    private void btnEncryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEncryptionActionPerformed
+        // TODO add your handling code here:
+        String plainText = txtPlainText.getText().trim().replaceAll("\\s{1,}","");
+        String K = txtKeyEncryption.getText().trim().replaceAll("\\s{1,}","");
+        
+        if("".equals(plainText) || "".equals(K)){
+            JOptionPane.showMessageDialog(frame,"Key or plainText invalid");
+        }
+        else{
+            String cipherText ;
+            plainText = convertToBinary(plainText);
+            
+            String streamKey = generateStreamKey(plainText.length(), K);
+
+//            cipherText = tinhXOR(streamKey, plainText);
+            tareaEncryptionResult.setText(streamKey);
+        } 
+    }//GEN-LAST:event_btnEncryptionActionPerformed
+
+    private void btnDecryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDecryptionActionPerformed
+        // TODO add your handling code here:
+        String cipherText = txtCipherText.getText().trim().replaceAll("\\s{1,}","");
+        String K = txtKeyDecryption.getText().trim().replaceAll("\\s{1,}","");
+        if("".equals(cipherText) || "".equals(K)){
+            JOptionPane.showMessageDialog(frame,"Key or plainText invalid");
+        }
+        else{
+            String plainText;
+        
+            cipherText = convertToBinary(cipherText);
+            String streamKey = generateStreamKey(cipherText.length(), K);
+
+            plainText = tinhXOR(streamKey, cipherText);
+            tareaDecryptionResult.setText(plainText);
+        }
+        
+    }//GEN-LAST:event_btnDecryptionActionPerformed
 
     /**
      * @param args the command line arguments

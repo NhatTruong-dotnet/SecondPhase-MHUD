@@ -6,8 +6,10 @@
 package RC4;
 
 import com.sun.org.apache.bcel.internal.generic.AALOAD;
+import java.awt.Component;
 import java.awt.dnd.DropTargetDropEvent;
 import java.util.Arrays;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import static sun.util.calendar.CalendarUtils.mod;
 
@@ -80,6 +82,11 @@ public class DashBoard extends javax.swing.JFrame {
         jScrollPane2.setViewportView(tareaDecryptionResult);
 
         btnDecryption.setText("Decryption");
+        btnDecryption.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDecryptionActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -160,8 +167,28 @@ public class DashBoard extends javax.swing.JFrame {
     
     private void btnEncryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEncryptionActionPerformed
         initS_and_T_Array();
-       
+        permutatesS();
+        
+        String plainText = txtPlainText.getText().trim().replaceAll("\\s{1,}","");
+        
+        String streamKey = generateStreamKey(plainText.length(),S);
+        plainText = convertToBinary(plainText);      
+        
+        String cipherText = tinhXOR(plainText, streamKey);
+        tareaEncryptionResult.setText(cipherText);
     }//GEN-LAST:event_btnEncryptionActionPerformed
+
+    private void btnDecryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDecryptionActionPerformed
+        // TODO add your handling code here:
+        initS_and_T_Array();
+        permutatesS();
+        
+        String cipherText = txtCipherText.getText().trim().replaceAll("\\s{1,}","");
+        String streamKey = generateStreamKey(cipherText.length(),S);
+        cipherText = convertToBinary(cipherText);
+        String plainText = tinhXOR(cipherText, streamKey);
+        tareaDecryptionResult.setText(plainText);
+    }//GEN-LAST:event_btnDecryptionActionPerformed
 
     /**
      * @param args the command line arguments
@@ -197,6 +224,85 @@ public class DashBoard extends javax.swing.JFrame {
             }
         });
     }
+        public static String tinhXOR(String a,String b)
+        {
+             StringBuilder result = new StringBuilder();
+
+                char[] charsA = a.toCharArray();
+                char[] charsB = b.toCharArray();
+                 for (int i = 0; i <= a.length()-1; i++) {
+                        if(charsA[i] == '0' || charsA[i] == '1' ||charsB[i] == '0' || charsB[i] == '1')
+                        {
+                            try
+                            {
+                                result.append(charsA[i] ^ charsB[i]);
+                            }
+                            catch(Exception e){
+                                   System.err.println(e);
+                            }
+                        }
+                        else{
+                            Component frame = null;
+                             JOptionPane.showMessageDialog(frame,"Vui lòng chỉ nhập số 0,1");
+                             break;
+                        }
+                }
+
+
+            return result.toString();  
+        }
+        public static String convertToBinary(String input) {
+            
+            try{
+                int dec = Integer.parseInt(input);
+                String result= "00000000";
+                int i=result.length()-1;
+                while(dec!=0)
+                {
+                  char a[]=result.toCharArray();
+                  a[i--]= String.valueOf(dec%2).charAt(0);
+                  result=new String(a);
+                  dec=dec/2;  }
+                    return  result;
+                }
+            catch(Exception e)
+            {
+                StringBuilder result = new StringBuilder();
+                char[] chars = input.toCharArray();
+                for (char aChar : chars) {
+                    result.append(String.format("%8s", Integer.toBinaryString(aChar)).replaceAll(" ", "0")  );    // char -> int, auto-cast
+                }
+               
+                return result.toString();  
+            }
+
+        }
+        private String generateStreamKey(int length,int[]S){
+        
+            
+            String streamKey = "";
+            int i = 0, j =0, loop = 0;
+            
+            while(loop < length){
+                
+                i = (i+1) % 256;
+                j = (j+S[i]) % 256;
+
+                int temp ;
+                temp = S[i];
+                S[i] = S[j];
+                S[j] = temp;
+
+                int t = (S[i] + S[j]) % 256;
+                int k = S[t];
+                streamKey += convertToBinary(String.valueOf(k));
+                loop++;
+            }
+            return streamKey;
+        }
+        
+        
+        
         private void initS_and_T_Array(){
             String key = txtKeyEncryption.getText();
             String[] keyArray = key.split("");
