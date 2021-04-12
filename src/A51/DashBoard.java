@@ -80,14 +80,7 @@ public class DashBoard extends javax.swing.JFrame {
 
         return result.stream().collect(Collectors.joining(separator));
     }
-    public static boolean isNumeric(String str) {
-        try {
-            Double.parseDouble(str);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
+   
     public static String tinhXOR(String a, String b) {
         StringBuilder result = new StringBuilder();
 
