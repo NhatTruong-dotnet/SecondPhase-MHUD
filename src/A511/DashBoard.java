@@ -312,6 +312,11 @@ public class DashBoard extends javax.swing.JFrame {
         jLabel2.setText("Key");
 
         btnDecryption.setText("Decryption");
+        btnDecryption.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDecryptionActionPerformed(evt);
+            }
+        });
 
         tareaEncryptionResult.setColumns(20);
         tareaEncryptionResult.setRows(5);
@@ -402,19 +407,87 @@ public class DashBoard extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnEncryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEncryptionActionPerformed
-        String[] streamKey = new String[streamKeySize];
-        initRegisterBaseKey(sessionKey.split(""));
-        initRegisterBaseKey(bitFrameCounter.split(""));
-        rotate100ReInit();
-        streamKey = generateStreamKey();
+    private String generateStreamKey(int length, String K){
+        String streamKey = "";
         
-        System.out.println(Arrays.toString(x_Register));
-        System.out.println(Arrays.toString(y_Register));
-        System.out.println(Arrays.toString(z_Register));
+        String X, Y, Z;
+        try{
+            if(K.contains(".")){
+            String [] arrayXYZ = K.split(".");
+            X = arrayXYZ[0];
+            Y = arrayXYZ[1];
+            Z = arrayXYZ[2];
+            }
+            else{
+                X = K.substring(0, 19);
+                Y = K.substring(19, 41);
+                Z = K.substring(41);
+            }
+            if(X.length() != 19 || Y.length() != 22 || Z.length() !=23)
+            {
+                JOptionPane.showMessageDialog(frame,"Key invalid");
+            }
 
+            for(int i = 0; i < length; i++){
+                String[] arr;
+                arr = major(X,Y,Z);
+                
+                streamKey += arr[0];
+                X = arr[1];
+                Y = arr[2];
+                Z = arr[3];
+            }
+            
+        }
+        catch(Exception e){
+            JOptionPane.showMessageDialog(frame,"Key invalid");
+        }
+        return streamKey;
+    }
+    private void btnEncryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEncryptionActionPerformed
+//        String[] streamKey = new String[streamKeySize];
+//        initRegisterBaseKey(sessionKey.split(""));
+//        initRegisterBaseKey(bitFrameCounter.split(""));
+//        rotate100ReInit();
+//        streamKey = generateStreamKey();
+//        
+//        System.out.println(Arrays.toString(x_Register));
+//        System.out.println(Arrays.toString(y_Register));
+//        System.out.println(Arrays.toString(z_Register));
+          String plainText = txtPlainText.getText().trim().replaceAll("\\s{1,}","");
+            String K = txtKeyEncryption.getText().trim().replaceAll("\\s{1,}","");
+
+            if("".equals(plainText) || "".equals(K)){
+                JOptionPane.showMessageDialog(frame,"Key or plainText invalid");
+            }
+            else{
+                String cipherText ;
+                plainText = convertPlainTextToBinary(plainText);
+
+                String streamKey = generateStreamKey(plainText.length(), K);
+
+                cipherText = tinhXOR(streamKey, plainText);
+                tareaEncryptionResult.setText(cipherText);
+            } 
     }//GEN-LAST:event_btnEncryptionActionPerformed
+
+    private void btnDecryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDecryptionActionPerformed
+        // TODO add your handling code here:
+        String cipherText = txtCipherText.getText().trim().replaceAll("\\s{1,}","");
+        String K = txtKeyDecryption.getText().trim().replaceAll("\\s{1,}","");
+        if("".equals(cipherText) || "".equals(K)){
+            JOptionPane.showMessageDialog(frame,"Key or plainText invalid");
+        }
+        else{
+            String plainText;
+        
+            cipherText = convertPlainTextToBinary(cipherText);
+            String streamKey = generateStreamKey(cipherText.length(), K);
+
+            plainText = tinhXOR(streamKey, cipherText);
+            tareaDecryptionResult.setText(plainText);
+        }
+    }//GEN-LAST:event_btnDecryptionActionPerformed
 
     /**
      * @param args the command line arguments
