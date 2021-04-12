@@ -25,16 +25,25 @@ public class DashBoard extends javax.swing.JFrame {
     public DashBoard() {
         initComponents(); 
     }
-    public static String convertToBinary(String input) {
+    public static String convertPlainTextToBinary(String plainText) {
         try{
-            int a = Integer.parseInt(input);
-            
-            return Integer.toBinaryString(a);
+            int dec = Integer.parseInt(plainText);
+            String result= "00000000";
+            int i=result.length()-1;
+            while(dec!=0)
+            {
+              char a[]=result.toCharArray();
+              a[i--]= String.valueOf(dec%2).charAt(0);
+              result=new String(a);
+              dec=dec/2;  
+
+            }
+            return  result;
         }
         catch(Exception e)
         {
              StringBuilder result = new StringBuilder();
-            char[] chars = input.toCharArray();
+            char[] chars = plainText.toCharArray();
               for (char aChar : chars) {
              result.append(String.format("%8s", Integer.toBinaryString(aChar)).replaceAll(" ", "0")  );    // char -> int, auto-cast
 
@@ -43,6 +52,7 @@ public class DashBoard extends javax.swing.JFrame {
         }
             
     }
+   
     
     public static String prettyBinary(String binary, int blockSize, String separator) {
 
@@ -64,23 +74,19 @@ public class DashBoard extends javax.swing.JFrame {
   }  
 }
 
-     public static String tinhXOR(String a,String b)
+    private String XORStreamKeyPlainText(String streamKey,String plainText)
     {
-         StringBuilder result = new StringBuilder();
-      
-            char[] charsA = a.toCharArray();
-            char[] charsB = b.toCharArray();
-             for (int i = 0; i <= a.length()-1; i++) {
-                    if((charsA[i] == '0' || charsA[i] == '1') && ((charsB[i] == '0' || charsB[i] == '1'))) 
+             StringBuilder result = new StringBuilder();
+            String[] charsStreamKey = streamKey.split("");
+            String[] charsPlainTextB = plainText.split("");
+            if(charsStreamKey.length == charsPlainTextB.length){
+             for (int i = 0; i <= charsStreamKey.length-1; i++) {
+                    if((charsStreamKey[i].equals("0") || charsStreamKey[i].equals("1")) && (charsPlainTextB[i].equals("0") || charsPlainTextB[i].equals("1"))) 
                     {   
                     try
                     {
-                         if(charsA[i] == charsB[i]){
-                            result.append("1");
-                        }
-                        else{
-                            result.append("0");
-                        }
+                       String XOR= XOR(charsStreamKey[i], charsPlainTextB[i]);
+                       result.append(XOR);
                     }
                     catch(Exception e){
                            System.err.println(e);
@@ -91,8 +97,11 @@ public class DashBoard extends javax.swing.JFrame {
                          break;
                     }
             }
-        
-        
+            }
+            else{
+                JOptionPane.showMessageDialog(frame,"Độ dài 2 kí tự phải bằng nhau");
+            }
+
         return result.toString();  
     }
         
