@@ -65,16 +65,9 @@ public class DashBoard extends javax.swing.JFrame {
 
         return result.stream().collect(Collectors.joining(separator));
     }
-    public static boolean isNumeric(String str) { 
-  try {  
-    Double.parseDouble(str);  
-    return true;
-  } catch(NumberFormatException e){  
-    return false;  
-  }  
-}
+   
 
-    private String XORStreamKeyPlainText(String streamKey,String plainText)
+    public static String XORStreamKeyPlainText(String streamKey,String plainText)
     {
              StringBuilder result = new StringBuilder();
             String[] charsStreamKey = streamKey.split("");
@@ -85,8 +78,12 @@ public class DashBoard extends javax.swing.JFrame {
                     {   
                     try
                     {
-                       String XOR= XOR(charsStreamKey[i], charsPlainTextB[i]);
-                       result.append(XOR);
+                       if(charsStreamKey[i] == charsPlainTextB[i]){
+                            result.append("0");
+                        }
+                        else{
+                            result.append("1");
+                        }
                     }
                     catch(Exception e){
                            System.err.println(e);
@@ -149,7 +146,8 @@ public class DashBoard extends javax.swing.JFrame {
                    z= RotateZ(z);
                  mangZ = z.split("");}
          }
-         String abc =tinhXOR(tinhXOR(mangX[18], mangY[21]),mangZ[22]);
+         
+         String abc = XORStreamKeyPlainText(XORStreamKeyPlainText(mangX[18], mangY[21]),mangZ[22]);
          mang[0] = abc;
          mang[1] = x;
          mang[2] = y;
@@ -161,7 +159,7 @@ public class DashBoard extends javax.swing.JFrame {
         StringBuilder result = new StringBuilder();
          String[] mangX = x.split("");
         
-         String t = tinhXOR(tinhXOR(tinhXOR(mangX[13], mangX[16]),mangX[17]),mangX[18]);
+         String t = XORStreamKeyPlainText(XORStreamKeyPlainText(XORStreamKeyPlainText(mangX[13], mangX[16]),mangX[17]),mangX[18]);
          
          result.append(t);
 
@@ -175,7 +173,7 @@ public class DashBoard extends javax.swing.JFrame {
     {
         StringBuilder result = new StringBuilder();
          String[] mangY = y.split("");  
-         String t = tinhXOR(mangY[20],mangY[21]);
+         String t = XORStreamKeyPlainText(mangY[20],mangY[21]);
          result.append(t);
 
          for (int j = 0; j < 21; j++) {
@@ -188,7 +186,7 @@ public class DashBoard extends javax.swing.JFrame {
     {
         StringBuilder result = new StringBuilder();
          String[] mangZ = z.split("");  
-         String t = tinhXOR(tinhXOR(tinhXOR(mangZ[7], mangZ[20]),mangZ[21]),mangZ[22]);
+         String t = XORStreamKeyPlainText(XORStreamKeyPlainText(XORStreamKeyPlainText(mangZ[7], mangZ[20]),mangZ[21]),mangZ[22]);
          result.append(t);
 
          for (int j = 0; j < 22; j++) {
