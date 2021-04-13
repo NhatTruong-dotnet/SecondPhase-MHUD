@@ -10,6 +10,7 @@ package A511;
  * @author tbui48
  */
 import java.awt.Component;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,14 +38,29 @@ public class DashBoard extends javax.swing.JFrame {
     String[] x_Register = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
     String[] y_Register = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
     String[] z_Register = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
+     int dem =0;     
 
     public DashBoard() {
         initComponents();
     }
     // <editor-fold defaultstate="collapsed" desc="Dau"> 
     public static String convertPlainTextToBinary(String plainText) {
-        try{
-            int dec = Integer.parseInt(plainText);
+        
+             StringBuilder result = new StringBuilder();
+            char[] chars = plainText.toCharArray();
+              for (char aChar : chars) {
+             result.append(String.format("%8s", Integer.toBinaryString(aChar)).replaceAll(" ", "0")  );    // char -> int, auto-cast
+
+            }
+               return result.toString();    
+    }
+    public  String convertDecimalToBinary(int dec) {  // hàm chuyển về nhị phân nếu số lớn hơn 255 sẽ tách thành nhiều chuỗi 8 bit
+        StringBuilder resultArray = new StringBuilder();
+        while(dec>=256)
+        {
+            resultArray.append("11111111");
+            dec = dec-255;
+        }
             String result= "00000000";
             int i=result.length()-1;
             while(dec!=0)
@@ -53,22 +69,23 @@ public class DashBoard extends javax.swing.JFrame {
               a[i--]= String.valueOf(dec%2).charAt(0);
               result=new String(a);
               dec=dec/2;  
-
             }
-            return  result;
-        }
-        catch(Exception e)
-        {
-             StringBuilder result = new StringBuilder();
-            char[] chars = plainText.toCharArray();
-              for (char aChar : chars) {
-             result.append(String.format("%8s", Integer.toBinaryString(aChar)).replaceAll(" ", "0")  );    // char -> int, auto-cast
-
-        }
-               return result.toString();  
-        }
-            
+       return  resultArray.append(result).toString();
     }
+  
+    public static String[] convert(String[] Streamkey,String[] PlainTextB)
+    {
+        String[] result =Streamkey ;
+        int j = Streamkey.length-1-PlainTextB.length;
+        int k = Streamkey.length-1;
+        for (int i = PlainTextB.length-1; i >= 0; i--) {
+            if(k>j)
+            result[k] = XOR(Streamkey[k], PlainTextB[i]);
+            k--;
+        }
+        return result;
+    }
+    
     public static String prettyBinary(String binary, int blockSize, String separator) {
 
         List<String> result = new ArrayList<>();
@@ -216,7 +233,7 @@ public class DashBoard extends javax.swing.JFrame {
         return String.valueOf(currentXOR);
     }
 
-    private String XOR(String firstBit, String secondBit) {
+    private static String XOR(String firstBit, String secondBit) {
         //already check, not complete test
         return String.valueOf(Integer.parseInt(firstBit) ^ Integer.parseInt(secondBit));
     }
@@ -397,18 +414,19 @@ public class DashBoard extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEncryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEncryptionActionPerformed
+        
+        
         String[] streamKey = new String[streamKeySize];
         initRegisterBaseKey(sessionKey.split(""));
         initRegisterBaseKey(bitFrameCounter.split(""));
         rotate100ReInit();
         streamKey = generateStreamKey();
-        
         System.out.println(Arrays.toString(x_Register));
         System.out.println(Arrays.toString(y_Register));
         System.out.println(Arrays.toString(z_Register));
-
+        
     }//GEN-LAST:event_btnEncryptionActionPerformed
-
+    
     /**
      * @param args the command line arguments
      */
