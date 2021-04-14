@@ -38,8 +38,7 @@ public class DashBoard extends javax.swing.JFrame {
     String[] x_Register = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
     String[] y_Register = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
     String[] z_Register = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
-     int dem =0;     
-
+    final int plainTextSize = 228;
     public DashBoard() {
         initComponents();
     }
@@ -72,10 +71,33 @@ public class DashBoard extends javax.swing.JFrame {
             }
        return  resultArray.append(result).toString();
     }
-  
-    public static String[] convert(String[] Streamkey,String[] PlainTextB)
-    {
-        String[] result =Streamkey ;
+    public String[] initPlainText() {
+        String[] plainTextBit = new String[plainTextSize];
+        for (int i = 0; i < plainTextSize; i++) {
+            plainTextBit[i] = "0";
+        }
+        return plainTextBit;
+    }
+    public String[] plainTextThuc(String[] b){
+        String[] a = initPlainText();
+        String[] result = new String[b.length];
+       
+        int k = a.length-1;
+        for (int i = b.length-1; i >=0 ; i--) {
+            result[i] = AND(a[k], b[i]);
+            k--;
+        }
+        return result;
+    }
+    public String AND (String a, String b){
+        return String.valueOf(Integer.parseInt(a) | Integer.parseInt(b));
+    }
+    public static String[] XORStreamkeyPlaintext(String[] Streamkey,String[] PlainTextB) {    
+        
+        if(Streamkey.length >= PlainTextB.length)
+        {
+        String[] result = new String[Streamkey.length] ;
+      
         int j = Streamkey.length-1-PlainTextB.length;
         int k = Streamkey.length-1;
         for (int i = PlainTextB.length-1; i >= 0; i--) {
@@ -83,7 +105,27 @@ public class DashBoard extends javax.swing.JFrame {
             result[k] = XOR(Streamkey[k], PlainTextB[i]);
             k--;
         }
+        for (int i = 0; i <= Streamkey.length-PlainTextB.length-1; i++) {       
+            result[i] = Streamkey[i];
+        }
         return result;
+        }
+        else
+        {
+        String[] result =new String[PlainTextB.length];
+  
+        int j = PlainTextB.length-1-Streamkey.length;
+        int k = PlainTextB.length-1;
+        for (int i = Streamkey.length-1; i >= 0; i--) {
+            if(k>j)
+            result[k] = XOR(PlainTextB[k], Streamkey[i]);
+            k--;
+        }
+        for (int i = 0; i <= PlainTextB.length-Streamkey.length-1; i++) {       
+            result[i] = PlainTextB[i];
+        }
+        return result;
+        }
     }
     
     public static String prettyBinary(String binary, int blockSize, String separator) {
@@ -414,8 +456,21 @@ public class DashBoard extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEncryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEncryptionActionPerformed
-        
-        
+         String plainTextB ="101000101010011";
+      String Streamkey = "1111101011";
+      
+      String[] chuoiPlainText = plainTextB.split("");
+      String outputPlaintext =Arrays.toString(chuoiPlainText);
+     
+        String[] ChuoiStreamKey = Streamkey.split("");
+       String[] cipherText = XORStreamkeyPlaintext(ChuoiStreamKey, chuoiPlainText);
+          String outputStreamKey = Arrays.toString(ChuoiStreamKey);
+       String outputCipher =Arrays.toString(cipherText);
+  
+           System.out.println(outputPlaintext);//plaintext
+      System.out.println(outputStreamKey);//streamkey
+        System.out.println(outputCipher);//ciphertext
+        /*
         String[] streamKey = new String[streamKeySize];
         initRegisterBaseKey(sessionKey.split(""));
         initRegisterBaseKey(bitFrameCounter.split(""));
@@ -424,7 +479,7 @@ public class DashBoard extends javax.swing.JFrame {
         System.out.println(Arrays.toString(x_Register));
         System.out.println(Arrays.toString(y_Register));
         System.out.println(Arrays.toString(z_Register));
-        
+        */
     }//GEN-LAST:event_btnEncryptionActionPerformed
     
     /**
