@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
 
+/*
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -30,11 +31,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+*/
 
 public class DashBoard extends javax.swing.JFrame {
     
     private static Component frame;
-    
     /**
      * Creates new form DashBoard
      */
@@ -488,7 +489,8 @@ public class DashBoard extends javax.swing.JFrame {
     document.close();
     System.out.println("successully");
   }
-    */
+   
+    
     public void readFile(){
         // Create Blank document
     try {
@@ -505,7 +507,7 @@ public class DashBoard extends javax.swing.JFrame {
       ex.printStackTrace();
     }
   }
-    
+     */
     private void btnEncryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEncryptionActionPerformed
        
 
