@@ -18,10 +18,23 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
 
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.FileInputStream;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+
 public class DashBoard extends javax.swing.JFrame {
-
+    
     private static Component frame;
-
+    
     /**
      * Creates new form DashBoard
      */
@@ -39,6 +52,7 @@ public class DashBoard extends javax.swing.JFrame {
     String[] y_Register = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
     String[] z_Register = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
     final int plainTextSize = 228;
+
     public DashBoard() {
         initComponents();
     }
@@ -80,11 +94,11 @@ public class DashBoard extends javax.swing.JFrame {
     }
     public String[] plainTextThuc(String[] b){
         String[] a = initPlainText();
-        String[] result = new String[b.length];
+        String[] result = a;
        
         int k = a.length-1;
         for (int i = b.length-1; i >=0 ; i--) {
-            result[i] = AND(a[k], b[i]);
+            result[k] = AND(a[k], b[i]);
             k--;
         }
         return result;
@@ -331,7 +345,7 @@ public class DashBoard extends javax.swing.JFrame {
         return streamKey;
     }
 // </editor-fold> 
-   
+  
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -454,32 +468,64 @@ public class DashBoard extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnEncryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEncryptionActionPerformed
-         String plainTextB ="101000101010011";
-      String Streamkey = "1111101011";
+    /*
+    public static void ghiFile() throws IOException {
+    // Create Blank document
+    XWPFDocument document = new XWPFDocument();
+    // Create new Paragraph
+    XWPFParagraph paragraph1 = document.createParagraph();
+    XWPFRun run = paragraph1.createRun();
+    run.setText("Paragraph 1: stackjava.com");
+    
+    XWPFParagraph paragraph2 = document.createParagraph();
+    run = paragraph2.createRun();
+    run.setText("Paragraph 2: demo read/write file MS-Word");
+    
+    // Write the Document in file system
+    FileOutputStream out = new FileOutputStream(new File("demo-apache-apoi-word.docx"));
+    document.write(out);
+    out.close();
+    document.close();
+    System.out.println("successully");
+  }
+    */
+    public void readFile(){
+        // Create Blank document
+    try {
+      FileInputStream fis = new FileInputStream("SecondPhase.docx");
+      XWPFDocument document = new XWPFDocument(OPCPackage.open(fis));
+      List<XWPFParagraph> paragraphList = document.getParagraphs();
+      for (XWPFParagraph paragraph : paragraphList) {
+        System.out.println(paragraph.getText());
+      }
       
-      String[] chuoiPlainText = plainTextB.split("");
-      String outputPlaintext =Arrays.toString(chuoiPlainText);
-     
-        String[] ChuoiStreamKey = Streamkey.split("");
-       String[] cipherText = XORStreamkeyPlaintext(ChuoiStreamKey, chuoiPlainText);
-          String outputStreamKey = Arrays.toString(ChuoiStreamKey);
-       String outputCipher =Arrays.toString(cipherText);
-  
-           System.out.println(outputPlaintext);//plaintext
-      System.out.println(outputStreamKey);//streamkey
-        System.out.println(outputCipher);//ciphertext
-        /*
-        String[] streamKey = new String[streamKeySize];
-        initRegisterBaseKey(sessionKey.split(""));
-        initRegisterBaseKey(bitFrameCounter.split(""));
-        rotate100ReInit();
-        streamKey = generateStreamKey();
-        System.out.println(Arrays.toString(x_Register));
-        System.out.println(Arrays.toString(y_Register));
-        System.out.println(Arrays.toString(z_Register));
-        */
+      
+      document.close();
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+  }
+    
+    private void btnEncryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEncryptionActionPerformed
+       
+
+          String b = "10101010101010010101010";
+          String a[] = b.split("");
+          String s = Arrays.toString(plainTextThuc(a));
+            
+            System.out.println(s);//plaintext
+           
+            /*
+            String[] streamKey = new String[streamKeySize];
+            initRegisterBaseKey(sessionKey.split(""));
+            initRegisterBaseKey(bitFrameCounter.split(""));
+            rotate100ReInit();
+            streamKey = generateStreamKey();
+            System.out.println(Arrays.toString(x_Register));
+            System.out.println(Arrays.toString(y_Register));
+            System.out.println(Arrays.toString(z_Register));
+            */
+        
     }//GEN-LAST:event_btnEncryptionActionPerformed
     
     /**
@@ -517,7 +563,7 @@ public class DashBoard extends javax.swing.JFrame {
         });
     }
 
-
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDecryption;
     private javax.swing.JButton btnEncryption;
