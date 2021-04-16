@@ -286,8 +286,8 @@ public class DashBoard extends javax.swing.JFrame {
 
     private void Rotate(String[] register, String bitReplace) {
         //move left to 1 bit at index 0 = XOR tappedBit together in register
-        int currentIndex = register.length;
-        while (currentIndex > 0) {
+        int currentIndex = register.length-1;
+        while (currentIndex >= 1) {
             register[currentIndex] = register[currentIndex - 1];
             currentIndex--;
         }
@@ -313,7 +313,7 @@ public class DashBoard extends javax.swing.JFrame {
         String[] streamKey = new String[streamKeySize];
         for (int index = 0; index < streamKeySize; index++) {
             String majorResult = Major();
-            String[] streamKeyArr = new String[3];
+            String[] streamKeyArr = new String[]{"0","0","0"};
             if (Objects.equals(x_Register[clocked_X_Major], majorResult)) {
                 Rotate(x_Register, XORWithConstArrayIndex(x_TappedBit, x_Register));
                 streamKeyArr[0] = x_Register[18];
@@ -326,7 +326,7 @@ public class DashBoard extends javax.swing.JFrame {
                 Rotate(z_Register, XORWithConstArrayIndex(z_TappedBit, z_Register));
                 streamKeyArr[2] = z_Register[22];
             }
-            streamKey[index] = XORWithConstArrayIndex(streamKeyIndex, streamKeyArr);
+            streamKey[index] = String.valueOf(Integer.parseInt(streamKeyArr[0]) ^ Integer.parseInt(streamKeyArr[1]) ^ Integer.parseInt(streamKeyArr[2]));
         }
         return streamKey;
     }
@@ -497,29 +497,29 @@ public class DashBoard extends javax.swing.JFrame {
         return streamKey;
     }
     private void btnEncryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEncryptionActionPerformed
-//        String[] streamKey = new String[streamKeySize];
-//        initRegisterBaseKey(sessionKey.split(""));
-//        initRegisterBaseKey(bitFrameCounter.split(""));
-//        rotate100ReInit();
-//        streamKey = generateStreamKey();
-//        
-//        System.out.println(Arrays.toString(x_Register));
-//        System.out.println(Arrays.toString(y_Register));
-//        System.out.println(Arrays.toString(z_Register));
-          String plainText = txtPlainText.getText().trim().replaceAll("\\s{1,}","");
-            String K = txtKeyEncryption.getText().trim().replaceAll("\\s{1,}","");
-
-            if("".equals(plainText) || "".equals(K)){
-                JOptionPane.showMessageDialog(frame,"Key or plainText invalid");
-            }
-            else{
-                String cipherText ;
-                plainText = convertPlainTextToBinary(plainText);
-
-                String streamKey = generateStreamKey(plainText.length(), K);
-
-                cipherText = tinhXOR(streamKey, plainText);
-                tareaEncryptionResult.setText(cipherText);
+        String[] streamKey = new String[streamKeySize];
+        initRegisterBaseKey(sessionKey.split(""));
+        initRegisterBaseKey(bitFrameCounter.split(""));
+        rotate100ReInit();
+        streamKey = generateStreamKey();
+        
+        System.out.println(Arrays.toString(x_Register));
+        System.out.println(Arrays.toString(y_Register));
+        System.out.println(Arrays.toString(z_Register));
+//          String plainText = txtPlainText.getText().trim().replaceAll("\\s{1,}","");
+//            String K = txtKeyEncryption.getText().trim().replaceAll("\\s{1,}","");
+//
+//            if("".equals(plainText) || "".equals(K)){
+//                JOptionPane.showMessageDialog(frame,"Key or plainText invalid");
+//            }
+//            else{
+//                String cipherText ;
+//                plainText = convertPlainTextToBinary(plainText);
+//
+//                String streamKey = generateStreamKey(plainText.length(), K);
+//
+//                cipherText = tinhXOR(streamKey, plainText);
+//                tareaEncryptionResult.setText(cipherText);
             } 
     }//GEN-LAST:event_btnEncryptionActionPerformed
 
@@ -565,7 +565,7 @@ public class DashBoard extends javax.swing.JFrame {
         System.out.println(Arrays.toString(y_Register));
         System.out.println(Arrays.toString(z_Register));
         */
-    }//GEN-LAST:event_btnEncryptionActionPerformed
+                                                 
     
     /**
      * @param args the command line arguments
