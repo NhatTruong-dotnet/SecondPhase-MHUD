@@ -209,14 +209,9 @@ public class DashBoard extends javax.swing.JFrame {
                 key = key.substring(0, 255);
             }
             String[] arrayKey = new String[key.length()];
+            //convert to decimal value in ascii
             for(int i = 0; i < key.length(); i++){
-                try {
-                    arrayKey[i] = Integer.parseInt(String.valueOf(key.charAt(i)))+"";
-                    
-                } catch (Exception e) {
-                    arrayKey[i] = String.valueOf(key.codePointAt(i));
-                    
-                }
+                arrayKey[i] = String.valueOf(key.codePointAt(i));
             }
             //encryption
             initS_and_T_Array(arrayKey);
