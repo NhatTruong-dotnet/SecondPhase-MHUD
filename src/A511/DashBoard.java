@@ -80,11 +80,11 @@ public class DashBoard extends javax.swing.JFrame {
     }
     public String[] plainTextThuc(String[] b){
         String[] a = initPlainText();
-        String[] result = new String[b.length];
+        String[] result = a;
        
         int k = a.length-1;
         for (int i = b.length-1; i >=0 ; i--) {
-            result[i] = AND(a[k], b[i]);
+            result[k] = AND(a[k], b[i]);
             k--;
         }
         return result;
@@ -497,15 +497,8 @@ public class DashBoard extends javax.swing.JFrame {
         return streamKey;
     }
     private void btnEncryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEncryptionActionPerformed
-        String[] streamKey = new String[streamKeySize];
-        initRegisterBaseKey(sessionKey.split(""));
-        initRegisterBaseKey(bitFrameCounter.split(""));
-        rotate100ReInit();
-        streamKey = generateStreamKey();
-        
-        System.out.println(Arrays.toString(x_Register));
-        System.out.println(Arrays.toString(y_Register));
-        System.out.println(Arrays.toString(z_Register));
+       
+        // <editor-fold defaultstate="collapsed" desc="Previous workflow encryption">
 //          String plainText = txtPlainText.getText().trim().replaceAll("\\s{1,}","");
 //            String K = txtKeyEncryption.getText().trim().replaceAll("\\s{1,}","");
 //
@@ -520,41 +513,164 @@ public class DashBoard extends javax.swing.JFrame {
 //
 //                cipherText = tinhXOR(streamKey, plainText);
 //                tareaEncryptionResult.setText(cipherText);
-            } 
+            //} 
+            // </editor-fold> 
+            
+            
+         //Binary require
+        String plainText = txtPlainText.getText().trim().replaceAll("\\s{1,}","");
+        String key = txtKeyEncryption.getText().trim().replaceAll("\\s{1,}","");
+        String cipherText="";
+        //check binary
+        if(plainText.matches("^[0-1]+$")){
+            
+            //plain text length > 288 bit and  mod 228 > 0
+            int a = plainText.length() /228;
+            System.out.println(a);
+            if(a > 0 && plainText.length() % 228 > 0){
+                String  substringOfPlainTextLess228bit = plainText.substring(a*228);
+                
+                //fill 228 bit
+                String[] substring228bit = plainTextThuc(substringOfPlainTextLess228bit.split(""));
+                
+                plainText = plainText.substring(0,a*228);
+                for(int i = 0; i < substring228bit.length; i++){
+                    plainText += substring228bit[i];
+                }
+                
+                //calculate cipher text
+                cipherText = excute(plainText, key);
+            }
+            //plain text length < 288 bit
+            else if(a == 0){
+                
+                String[] arrayPlainText = plainTextThuc(plainText.split(""));
+                System.out.println(plainText);
+                String plainText228bit="";
+                for(String bit : arrayPlainText){
+                    plainText228bit+=bit;
+                }
+                System.out.println(plainText228bit);
+                cipherText = excute(plainText228bit, key);
+            }
+            else{
+                for(int i = 0; i < plainText.length(); i+= 228){
+
+                    cipherText += excute(plainText.substring(i, i+228), key);
+                    System.out.println("ok");
+                }
+                
+            }
+        }
+        else{
+            JOptionPane.showMessageDialog(rootPane,"PlainText or key invalid");
+        }
+        tareaEncryptionResult.setText(cipherText);
     }//GEN-LAST:event_btnEncryptionActionPerformed
 
     private void btnDecryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDecryptionActionPerformed
         // TODO add your handling code here:
+        // <editor-fold defaultstate="collapsed" desc="Previous workflow decryption">
+//        String cipherText = txtCipherText.getText().trim().replaceAll("\\s{1,}","");
+//        String K = txtKeyDecryption.getText().trim().replaceAll("\\s{1,}","");
+//        if("".equals(cipherText) || "".equals(K)){
+//            JOptionPane.showMessageDialog(frame,"Key or plainText invalid");
+//        }
+//        else{
+//            String plainText;
+//        
+//            cipherText = convertPlainTextToBinary(cipherText);
+//            String streamKey = generateStreamKey(cipherText.length(), K);
+//
+//            plainText = tinhXOR(streamKey, cipherText);
+//            tareaDecryptionResult.setText(plainText);
+//        }
+        // </editor-fold> 
+        
+        //Binary require
         String cipherText = txtCipherText.getText().trim().replaceAll("\\s{1,}","");
-        String K = txtKeyDecryption.getText().trim().replaceAll("\\s{1,}","");
-        if("".equals(cipherText) || "".equals(K)){
-            JOptionPane.showMessageDialog(frame,"Key or plainText invalid");
+        String key = txtKeyEncryption.getText().trim().replaceAll("\\s{1,}","");
+        String plainText="";
+        //check binary
+        if(cipherText.matches("^[0-1]+$")){
+            
+            
+            int a = cipherText.length() /228;
+            // cipher text length > 288 and mod 228 >0
+            if(a > 0 && cipherText.length() % 228 > 0){
+                String  substringOfCipherTextLess228bit = cipherText.substring(a*228);
+                //fill 228 bit
+                String[] substring228bit = plainTextThuc(substringOfCipherTextLess228bit.split(""));
+
+                cipherText = cipherText.substring(0,a*228);
+                for(int i = 0; i < substring228bit.length; i++){
+                    cipherText += substring228bit[i];
+                }
+                
+                //calculate plain text
+                plainText = excute(cipherText, key);
+            }
+            // cipher text length < 228
+            else if(a == 0){
+                
+                String[] arrayCipherText = plainTextThuc(cipherText.split(""));
+                
+                String cipherText228bit="";
+                for(String bit : arrayCipherText){
+                    cipherText228bit+=bit;
+                }
+                
+                plainText = excute(cipherText228bit, key);
+            }
+            
+            else{
+                for(int i = 0; i < cipherText.length(); i+= 228){
+
+                    plainText += excute(cipherText.substring(i, i+228), key);
+                    System.out.println("ok");
+                }
+                
+            }
         }
         else{
-            String plainText;
-        
-            cipherText = convertPlainTextToBinary(cipherText);
-            String streamKey = generateStreamKey(cipherText.length(), K);
-
-            plainText = tinhXOR(streamKey, cipherText);
-            tareaDecryptionResult.setText(plainText);
+            JOptionPane.showMessageDialog(rootPane,"PlainText or key invalid");
         }
+        tareaEncryptionResult.setText(plainText);
     }//GEN-LAST:event_btnDecryptionActionPerformed
+    private String excute(String plainText, String key){
 
-         String plainTextB ="101000101010011";
-      String Streamkey = "1111101011";
-      
-      String[] chuoiPlainText = plainTextB.split("");
-      String outputPlaintext =Arrays.toString(chuoiPlainText);
-     
-        String[] ChuoiStreamKey = Streamkey.split("");
-       String[] cipherText = XORStreamkeyPlaintext(ChuoiStreamKey, chuoiPlainText);
-          String outputStreamKey = Arrays.toString(ChuoiStreamKey);
-       String outputCipher =Arrays.toString(cipherText);
+        String[] arrayStreamKey = new String[streamKeySize];
+        if(plainText.length() != 228){
+            System.out.println("error");
+        }
+        
+        initRegisterBaseKey(key.split(""));
+        initRegisterBaseKey(bitFrameCounter.split(""));
+        rotate100ReInit();
+        arrayStreamKey = generateStreamKey();
+        
+        
+        String streamKey ="";
+        for (String bit : arrayStreamKey) {
+            streamKey += bit;
+        }
+        String cipherText = tinhXOR(plainText, streamKey);
+        return cipherText;
+    }
+//         String plainTextB ="101000101010011";
+//      String Streamkey = "1111101011";
+//      
+//      String[] chuoiPlainText = plainTextB.split("");
+//      String outputPlaintext =Arrays.toString(chuoiPlainText);
+//     
+//        String[] ChuoiStreamKey = Streamkey.split("");
+//       String[] cipherText = XORStreamkeyPlaintext(ChuoiStreamKey, chuoiPlainText);
+//          String outputStreamKey = Arrays.toString(ChuoiStreamKey);
+//       String outputCipher =Arrays.toString(cipherText);
   
-           System.out.println(outputPlaintext);//plaintext
-      System.out.println(outputStreamKey);//streamkey
-        System.out.println(outputCipher);//ciphertext
+//           System.out.println(outputPlaintext);//plaintext
+//      System.out.println(outputStreamKey);//streamkey
+//        System.out.println(outputCipher);//ciphertext
         /*
         String[] streamKey = new String[streamKeySize];
         initRegisterBaseKey(sessionKey.split(""));

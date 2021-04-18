@@ -7,9 +7,18 @@ package RC41;
 
 import com.sun.org.apache.bcel.internal.generic.AALOAD;
 import java.awt.Component;
+import java.awt.RenderingHints;
 import java.awt.dnd.DropTargetDropEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.Formatter;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import static sun.util.calendar.CalendarUtils.mod;
 
@@ -50,6 +59,8 @@ public class DashBoard extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         tareaDecryptionResult = new javax.swing.JTextArea();
         btnDecryption = new javax.swing.JButton();
+        btnOpenPlainText = new javax.swing.JButton();
+        btnSaveCipherText = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -85,6 +96,20 @@ public class DashBoard extends javax.swing.JFrame {
         btnDecryption.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnDecryptionActionPerformed(evt);
+            }
+        });
+
+        btnOpenPlainText.setText("Open File");
+        btnOpenPlainText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOpenPlainTextActionPerformed(evt);
+            }
+        });
+
+        btnSaveCipherText.setText("Save");
+        btnSaveCipherText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveCipherTextActionPerformed(evt);
             }
         });
 
@@ -124,7 +149,12 @@ public class DashBoard extends javax.swing.JFrame {
                                     .addComponent(txtKeyEncryption, javax.swing.GroupLayout.PREFERRED_SIZE, 626, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(layout.createSequentialGroup()
                                         .addGap(72, 72, 72)
-                                        .addComponent(btnEncryption, javax.swing.GroupLayout.PREFERRED_SIZE, 461, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                        .addComponent(btnEncryption, javax.swing.GroupLayout.PREFERRED_SIZE, 461, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(152, 152, 152)
+                                        .addComponent(btnOpenPlainText)
+                                        .addGap(196, 196, 196)
+                                        .addComponent(btnSaveCipherText)))))
                         .addGap(183, 183, 183)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 671, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(50, Short.MAX_VALUE))
@@ -145,7 +175,11 @@ public class DashBoard extends javax.swing.JFrame {
                         .addGap(39, 39, 39)
                         .addComponent(btnEncryption))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 150, Short.MAX_VALUE)
+                .addGap(28, 28, 28)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnOpenPlainText)
+                    .addComponent(btnSaveCipherText))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 97, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -166,30 +200,125 @@ public class DashBoard extends javax.swing.JFrame {
 
     
     private void btnEncryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEncryptionActionPerformed
-        initS_and_T_Array();
-        permutatesS();
-        
-        String plainText = txtPlainText.getText().trim().replaceAll("\\s{1,}","");
-        
-        String streamKey = generateStreamKey(plainText.length(),S);
-        plainText = convertToBinary(plainText);      
-        
-        String cipherText = tinhXOR(plainText, streamKey);
-        tareaEncryptionResult.setText(cipherText);
+        String plainText = txtPlainText.getText();
+        String key = txtKeyEncryption.getText();
+
+        if(!plainText.isEmpty() && !key.isEmpty()){
+            //handle key > 255 
+            if(key.length() > 255){
+                key = key.substring(0, 255);
+            }
+            String[] arrayKey = new String[key.length()];
+            for(int i = 0; i < key.length(); i++){
+                try {
+                    arrayKey[i] = Integer.parseInt(String.valueOf(key.charAt(i)))+"";
+                    
+                } catch (Exception e) {
+                    arrayKey[i] = String.valueOf(key.codePointAt(i));
+                    
+                }
+            }
+            //encryption
+            initS_and_T_Array(arrayKey);
+
+            permutatesS();
+            String streamKey = generateStreamKey(plainText.length());
+            plainText = convertToBinary(plainText);      
+
+            String xorResult = tinhXOR(plainText, streamKey);
+
+            String cipherText=convertBinarytoDecimal(xorResult);
+            
+            tareaEncryptionResult.setText(cipherText);
+        }else{
+            JOptionPane.showMessageDialog(rootPane,"PlainText or key invalid");
+        } 
     }//GEN-LAST:event_btnEncryptionActionPerformed
 
     private void btnDecryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDecryptionActionPerformed
         // TODO add your handling code here:
-        initS_and_T_Array();
-        permutatesS();
-        
-        String cipherText = txtCipherText.getText().trim().replaceAll("\\s{1,}","");
-        String streamKey = generateStreamKey(cipherText.length(),S);
-        cipherText = convertToBinary(cipherText);
-        String plainText = tinhXOR(cipherText, streamKey);
-        tareaDecryptionResult.setText(plainText);
-    }//GEN-LAST:event_btnDecryptionActionPerformed
+        String cipherText = txtCipherText.getText();
+        String key = txtKeyDecryption.getText();
 
+        if(!cipherText.isEmpty()&& !key.isEmpty()){
+            //handle key > 255 
+            if(key.length() > 255){
+                key = key.substring(0, 255);
+            }
+            
+            String[] arrayKey = new String[key.length()];
+            for(int i = 0; i < key.length(); i++){
+                try {
+                    arrayKey[i] = Integer.parseInt(String.valueOf(key.charAt(i)))+"";
+                    
+                } catch (Exception e) {
+                    arrayKey[i] = String.valueOf(key.codePointAt(i));
+                    
+                }
+            }
+            //decryption
+            initS_and_T_Array(arrayKey);
+            permutatesS();
+            String streamKey = generateStreamKey(cipherText.length());
+            cipherText = convertToBinary(cipherText);
+            
+            String xorResult = tinhXOR(cipherText, streamKey);
+            String plainText = convertBinarytoDecimal(xorResult);
+            tareaDecryptionResult.setText(plainText);
+        }else{
+            JOptionPane.showMessageDialog(rootPane,"PlainText or Key invalid");
+        }
+    }//GEN-LAST:event_btnDecryptionActionPerformed
+    //open file explore and read file
+    private void btnOpenPlainTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenPlainTextActionPerformed
+        // TODO add your handling code here:
+        JFileChooser chooser = new JFileChooser();
+        chooser.showOpenDialog(this);
+        File f = chooser.getSelectedFile();
+        String out = "";
+        if(f != null){
+            
+            try {
+                Scanner sc = new Scanner(f);
+                
+                while(sc.hasNext()){
+                    out += sc.nextLine();
+                }
+                txtPlainText.setText(out);
+            } catch (FileNotFoundException ex) {
+                JOptionPane.showMessageDialog(rootPane,"cannot open file");
+                
+            }
+        }
+    }//GEN-LAST:event_btnOpenPlainTextActionPerformed
+    //open file explore and print file
+    private void btnSaveCipherTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveCipherTextActionPerformed
+        // TODO add your handling code here:
+        JFileChooser chooser = new JFileChooser();
+        chooser.showSaveDialog(this);
+        //file select
+        File f = chooser.getSelectedFile();
+        
+        if(f != null){
+            Formatter saveFile;
+            try {
+                String input = tareaEncryptionResult.getText();
+                saveFile = new Formatter(f);
+                saveFile.format("%s", input);
+                saveFile.close();
+            } catch (FileNotFoundException ex) {
+                JOptionPane.showMessageDialog(rootPane,"cannot open file");
+
+            }
+        }
+    }//GEN-LAST:event_btnSaveCipherTextActionPerformed
+    private String convertBinarytoDecimal(String input){
+        String result = "";
+        for(int i = 0; i < input.length() ; ){
+            result += (char)Integer.parseInt(input.substring(i, i+=8),2);
+        }
+        return result;
+    }
     /**
      * @param args the command line arguments
      */
@@ -277,7 +406,7 @@ public class DashBoard extends javax.swing.JFrame {
             }
 
         }
-        private String generateStreamKey(int length,int[]S){
+        private String generateStreamKey(int length){
         
             
             String streamKey = "";
@@ -303,43 +432,46 @@ public class DashBoard extends javax.swing.JFrame {
         
         
         
-        private void initS_and_T_Array(){
-            String key = txtKeyEncryption.getText();
-            String[] keyArray = key.split("");
-            int modForFill = 256 % key.length();
-            int repeatToFill = 256 / key.length();
+        private void initS_and_T_Array(String[]keyArray){
+//            String key = txtKeyEncryption.getText();
             
-            if(repeatToFill != 0){
-                for(int index = 0; index < 256;){
-                    while(repeatToFill > 0) {
-                        for(int indexT = 0; indexT < key.length(); indexT++){
-                            T[index] = keyArray[indexT];
+//                String[] keyArray = key.split("");
+                int modForFill = 256 % keyArray.length;
+                int repeatToFill = 256 / keyArray.length;
+
+                if(repeatToFill != 0){
+                    for(int index = 0; index < 256;){
+                        while(repeatToFill > 0) {
+                            for(int indexT = 0; indexT < keyArray.length; indexT++){
+                                T[index] = keyArray[indexT];
+                                S[index] = index;
+                                index++;
+                            }
+                            repeatToFill--;
+                        }
+                        if(index > 255){
+                            return;
+                        }
+                        else{
                             S[index] = index;
                             index++;
                         }
-                        repeatToFill--;
                     }
-                    if(index > 255){
-                        return;
+
+                    repeatToFill = 256 / keyArray.length;    
+                    for(int index = 0; index < modForFill; index++){
+                        int currentIndexToInsert = repeatToFill*keyArray.length + index;
+                        T[currentIndexToInsert] = keyArray[index];
                     }
-                    else{
+                }
+                else{
+                    for(int index = 0; index < 256;index++){
                         S[index] = index;
-                        index++;
                     }
+                    T = keyArray;
                 }
             
-                repeatToFill = 256 / key.length();    
-                for(int index = 0; index < modForFill; index++){
-                    int currentIndexToInsert = repeatToFill*keyArray.length + index;
-                    T[currentIndexToInsert] = keyArray[index];
-                }
-            }
-            else{
-                for(int index = 0; index < 256;index++){
-                    S[index] = index;
-                }
-                T = keyArray;
-            }
+            
         }
         
         private void permutatesS(){
@@ -356,6 +488,8 @@ public class DashBoard extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDecryption;
     private javax.swing.JButton btnEncryption;
+    private javax.swing.JButton btnOpenPlainText;
+    private javax.swing.JButton btnSaveCipherText;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
