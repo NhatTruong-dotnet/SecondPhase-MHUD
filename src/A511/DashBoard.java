@@ -526,7 +526,7 @@ public class DashBoard extends javax.swing.JFrame {
             
             //plain text length > 288 bit and  mod 228 > 0
             int a = plainText.length() /228;
-            System.out.println(a);
+            
             if(a > 0 && plainText.length() % 228 > 0){
                 String  substringOfPlainTextLess228bit = plainText.substring(a*228);
                 
@@ -545,19 +545,19 @@ public class DashBoard extends javax.swing.JFrame {
             else if(a == 0){
                 
                 String[] arrayPlainText = plainTextThuc(plainText.split(""));
-                System.out.println(plainText);
+                
                 String plainText228bit="";
                 for(String bit : arrayPlainText){
                     plainText228bit+=bit;
                 }
-                System.out.println(plainText228bit);
+                
                 cipherText = excute(plainText228bit, key);
             }
             else{
                 for(int i = 0; i < plainText.length(); i+= 228){
 
                     cipherText += excute(plainText.substring(i, i+228), key);
-                    System.out.println("ok");
+                    
                 }
                 
             }
@@ -627,7 +627,7 @@ public class DashBoard extends javax.swing.JFrame {
                 for(int i = 0; i < cipherText.length(); i+= 228){
 
                     plainText += excute(cipherText.substring(i, i+228), key);
-                    System.out.println("ok");
+                    
                 }
                 
             }
@@ -640,9 +640,7 @@ public class DashBoard extends javax.swing.JFrame {
     private String excute(String plainText, String key){
 
         String[] arrayStreamKey = new String[streamKeySize];
-        if(plainText.length() != 228){
-            System.out.println("error");
-        }
+        
         
         initRegisterBaseKey(key.split(""));
         initRegisterBaseKey(bitFrameCounter.split(""));

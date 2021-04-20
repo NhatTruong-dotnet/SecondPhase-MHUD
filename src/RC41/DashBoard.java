@@ -208,9 +208,39 @@ public class DashBoard extends javax.swing.JFrame {
             if(key.length() > 255){
                 key = key.substring(0, 255);
             }
-            //convert binary input into decimal
+            //convert to decimal if input is binary 
             if(plainText.matches("^[0-1]+$")){
-                plainText = convertBinarytoDecimal(plainText);
+
+                //handle input > 8 bit and mod 8 >0
+                if(plainText.length() / 8 > 0 && plainText.length() % 8 > 0){
+                    
+                     String subStringOfPlainTextLess8bit = "";
+                     //cut part less 8 bit
+                     subStringOfPlainTextLess8bit = plainText.substring((plainText.length() / 8) * 8);
+                     //fill 8 bit
+                    String fillValue = "";
+                    int amountFill = 8 - plainText.length() % 8;
+                    for(int i = 0; i < amountFill; i++){
+                        fillValue += "0";
+                    }
+
+                    String subStringFull8Bit = fillValue + subStringOfPlainTextLess8bit;
+
+                    plainText = plainText.substring(0,plainText.length() / 8 * 8) + subStringFull8Bit;
+                }
+                //input < 8 bit
+                else if(plainText.length() < 8){
+                    int amountFill = 8 - plainText.length();
+                    String stringFull8Bit = "";
+                    for(int i = 0 ; i < amountFill; i++){
+                        stringFull8Bit += "0";
+                    }
+                    stringFull8Bit += plainText;
+                    plainText = convertBinarytoDecimal(stringFull8Bit);
+                }
+                else{
+                    plainText = convertBinarytoDecimal(plainText);
+                }
             }
             String[] arrayKey = new String[key.length()];
             //convert to decimal value in ascii
@@ -246,7 +276,38 @@ public class DashBoard extends javax.swing.JFrame {
             }
             //convert to decimal if input is binary 
             if(cipherText.matches("^[0-1]+$")){
-                cipherText = convertBinarytoDecimal(cipherText);
+                
+                
+                //handle input > 8 bit and mod 8 >0
+                if(cipherText.length() / 8 > 0 && cipherText.length() % 8 > 0){
+                    //cut part less 8 bit
+                    String subStringOfCipherTextLess8bit = "";
+                    subStringOfCipherTextLess8bit = cipherText.substring((cipherText.length() / 8) * 8);
+                    //fill 8 bit
+                    String fillValue = "";
+                    int amountFill = 8 - cipherText.length() % 8;
+                    for(int i = 0; i < amountFill; i++){
+                        fillValue += "0";
+                    }
+
+                    String subStringFull8Bit = fillValue + subStringOfCipherTextLess8bit;
+
+                    cipherText = cipherText.substring(0,cipherText.length() / 8 * 8) + subStringFull8Bit;
+                }
+                //input < 8 bit
+                else if(cipherText.length() < 8){
+                    int amountFill = 8 - cipherText.length();
+                    String stringFull8Bit = "";
+                    for(int i = 0 ; i < amountFill; i++){
+                        stringFull8Bit += "0";
+                    }
+                    stringFull8Bit += cipherText;
+                    cipherText = convertBinarytoDecimal(stringFull8Bit);
+                }
+                else{
+                    cipherText = convertBinarytoDecimal(cipherText);
+                }
+                
             }
             
             String[] arrayKey = new String[key.length()];
@@ -267,6 +328,7 @@ public class DashBoard extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(rootPane,"PlainText or Key invalid");
         }
     }//GEN-LAST:event_btnDecryptionActionPerformed
+    
     //open file explore and read file
     private void btnOpenPlainTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenPlainTextActionPerformed
         // TODO add your handling code here:
