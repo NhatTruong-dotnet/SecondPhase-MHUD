@@ -18,24 +18,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
 
-/*
-import org.apache.poi.openxml4j.opc.OPCPackage;
-import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.FileInputStream;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
-*/
-
 public class DashBoard extends javax.swing.JFrame {
-    
+
     private static Component frame;
+
     /**
      * Creates new form DashBoard
      */
@@ -53,7 +39,6 @@ public class DashBoard extends javax.swing.JFrame {
     String[] y_Register = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
     String[] z_Register = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
     final int plainTextSize = 228;
-
     public DashBoard() {
         initComponents();
     }
@@ -95,11 +80,11 @@ public class DashBoard extends javax.swing.JFrame {
     }
     public String[] plainTextThuc(String[] b){
         String[] a = initPlainText();
-        String[] result = a;
+        String[] result = new String[b.length];
        
         int k = a.length-1;
         for (int i = b.length-1; i >=0 ; i--) {
-            result[k] = AND(a[k], b[i]);
+            result[i] = AND(a[k], b[i]);
             k--;
         }
         return result;
@@ -301,8 +286,8 @@ public class DashBoard extends javax.swing.JFrame {
 
     private void Rotate(String[] register, String bitReplace) {
         //move left to 1 bit at index 0 = XOR tappedBit together in register
-        int currentIndex = register.length;
-        while (currentIndex > 0) {
+        int currentIndex = register.length-1;
+        while (currentIndex >= 1) {
             register[currentIndex] = register[currentIndex - 1];
             currentIndex--;
         }
@@ -328,7 +313,7 @@ public class DashBoard extends javax.swing.JFrame {
         String[] streamKey = new String[streamKeySize];
         for (int index = 0; index < streamKeySize; index++) {
             String majorResult = Major();
-            String[] streamKeyArr = new String[3];
+            String[] streamKeyArr = new String[]{"0","0","0"};
             if (Objects.equals(x_Register[clocked_X_Major], majorResult)) {
                 Rotate(x_Register, XORWithConstArrayIndex(x_TappedBit, x_Register));
                 streamKeyArr[0] = x_Register[18];
@@ -341,12 +326,12 @@ public class DashBoard extends javax.swing.JFrame {
                 Rotate(z_Register, XORWithConstArrayIndex(z_TappedBit, z_Register));
                 streamKeyArr[2] = z_Register[22];
             }
-            streamKey[index] = XORWithConstArrayIndex(streamKeyIndex, streamKeyArr);
+            streamKey[index] = String.valueOf(Integer.parseInt(streamKeyArr[0]) ^ Integer.parseInt(streamKeyArr[1]) ^ Integer.parseInt(streamKeyArr[2]));
         }
         return streamKey;
     }
 // </editor-fold> 
-  
+   
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -379,6 +364,11 @@ public class DashBoard extends javax.swing.JFrame {
         jLabel2.setText("Key");
 
         btnDecryption.setText("Decryption");
+        btnDecryption.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDecryptionActionPerformed(evt);
+            }
+        });
 
         tareaEncryptionResult.setColumns(20);
         tareaEncryptionResult.setRows(5);
@@ -469,66 +459,113 @@ public class DashBoard extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    /*
-    public static void ghiFile() throws IOException {
-    // Create Blank document
-    XWPFDocument document = new XWPFDocument();
-    // Create new Paragraph
-    XWPFParagraph paragraph1 = document.createParagraph();
-    XWPFRun run = paragraph1.createRun();
-    run.setText("Paragraph 1: stackjava.com");
-    
-    XWPFParagraph paragraph2 = document.createParagraph();
-    run = paragraph2.createRun();
-    run.setText("Paragraph 2: demo read/write file MS-Word");
-    
-    // Write the Document in file system
-    FileOutputStream out = new FileOutputStream(new File("demo-apache-apoi-word.docx"));
-    document.write(out);
-    out.close();
-    document.close();
-    System.out.println("successully");
-  }
-   
-    
-    public void readFile(){
-        // Create Blank document
-    try {
-      FileInputStream fis = new FileInputStream("SecondPhase.docx");
-      XWPFDocument document = new XWPFDocument(OPCPackage.open(fis));
-      List<XWPFParagraph> paragraphList = document.getParagraphs();
-      for (XWPFParagraph paragraph : paragraphList) {
-        System.out.println(paragraph.getText());
-      }
-      
-      
-      document.close();
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-  }
-     */
-    private void btnEncryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEncryptionActionPerformed
-       
-
-          String b = "10101010101010010101010";
-          String a[] = b.split("");
-          String s = Arrays.toString(plainTextThuc(a));
-            
-            System.out.println(s);//plaintext
-           
-            /*
-            String[] streamKey = new String[streamKeySize];
-            initRegisterBaseKey(sessionKey.split(""));
-            initRegisterBaseKey(bitFrameCounter.split(""));
-            rotate100ReInit();
-            streamKey = generateStreamKey();
-            System.out.println(Arrays.toString(x_Register));
-            System.out.println(Arrays.toString(y_Register));
-            System.out.println(Arrays.toString(z_Register));
-            */
+    private String generateStreamKey(int length, String K){
+        String streamKey = "";
         
+        String X, Y, Z;
+        try{
+            if(K.contains(".")){
+            String [] arrayXYZ = K.split(".");
+            X = arrayXYZ[0];
+            Y = arrayXYZ[1];
+            Z = arrayXYZ[2];
+            }
+            else{
+                X = K.substring(0, 19);
+                Y = K.substring(19, 41);
+                Z = K.substring(41);
+            }
+            if(X.length() != 19 || Y.length() != 22 || Z.length() !=23)
+            {
+                JOptionPane.showMessageDialog(frame,"Key invalid");
+            }
+
+            for(int i = 0; i < length; i++){
+                String[] arr;
+                arr = major(X,Y,Z);
+                
+                streamKey += arr[0];
+                X = arr[1];
+                Y = arr[2];
+                Z = arr[3];
+            }
+            
+        }
+        catch(Exception e){
+            JOptionPane.showMessageDialog(frame,"Key invalid");
+        }
+        return streamKey;
+    }
+    private void btnEncryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEncryptionActionPerformed
+        String[] streamKey = new String[streamKeySize];
+        initRegisterBaseKey(sessionKey.split(""));
+        initRegisterBaseKey(bitFrameCounter.split(""));
+        rotate100ReInit();
+        streamKey = generateStreamKey();
+        
+        System.out.println(Arrays.toString(x_Register));
+        System.out.println(Arrays.toString(y_Register));
+        System.out.println(Arrays.toString(z_Register));
+//          String plainText = txtPlainText.getText().trim().replaceAll("\\s{1,}","");
+//            String K = txtKeyEncryption.getText().trim().replaceAll("\\s{1,}","");
+//
+//            if("".equals(plainText) || "".equals(K)){
+//                JOptionPane.showMessageDialog(frame,"Key or plainText invalid");
+//            }
+//            else{
+//                String cipherText ;
+//                plainText = convertPlainTextToBinary(plainText);
+//
+//                String streamKey = generateStreamKey(plainText.length(), K);
+//
+//                cipherText = tinhXOR(streamKey, plainText);
+//                tareaEncryptionResult.setText(cipherText);
+            } 
     }//GEN-LAST:event_btnEncryptionActionPerformed
+
+    private void btnDecryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDecryptionActionPerformed
+        // TODO add your handling code here:
+        String cipherText = txtCipherText.getText().trim().replaceAll("\\s{1,}","");
+        String K = txtKeyDecryption.getText().trim().replaceAll("\\s{1,}","");
+        if("".equals(cipherText) || "".equals(K)){
+            JOptionPane.showMessageDialog(frame,"Key or plainText invalid");
+        }
+        else{
+            String plainText;
+        
+            cipherText = convertPlainTextToBinary(cipherText);
+            String streamKey = generateStreamKey(cipherText.length(), K);
+
+            plainText = tinhXOR(streamKey, cipherText);
+            tareaDecryptionResult.setText(plainText);
+        }
+    }//GEN-LAST:event_btnDecryptionActionPerformed
+
+         String plainTextB ="101000101010011";
+      String Streamkey = "1111101011";
+      
+      String[] chuoiPlainText = plainTextB.split("");
+      String outputPlaintext =Arrays.toString(chuoiPlainText);
+     
+        String[] ChuoiStreamKey = Streamkey.split("");
+       String[] cipherText = XORStreamkeyPlaintext(ChuoiStreamKey, chuoiPlainText);
+          String outputStreamKey = Arrays.toString(ChuoiStreamKey);
+       String outputCipher =Arrays.toString(cipherText);
+  
+           System.out.println(outputPlaintext);//plaintext
+      System.out.println(outputStreamKey);//streamkey
+        System.out.println(outputCipher);//ciphertext
+        /*
+        String[] streamKey = new String[streamKeySize];
+        initRegisterBaseKey(sessionKey.split(""));
+        initRegisterBaseKey(bitFrameCounter.split(""));
+        rotate100ReInit();
+        streamKey = generateStreamKey();
+        System.out.println(Arrays.toString(x_Register));
+        System.out.println(Arrays.toString(y_Register));
+        System.out.println(Arrays.toString(z_Register));
+        */
+                                                 
     
     /**
      * @param args the command line arguments
@@ -565,7 +602,7 @@ public class DashBoard extends javax.swing.JFrame {
         });
     }
 
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDecryption;
     private javax.swing.JButton btnEncryption;
