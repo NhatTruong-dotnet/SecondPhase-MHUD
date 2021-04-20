@@ -208,6 +208,10 @@ public class DashBoard extends javax.swing.JFrame {
             if(key.length() > 255){
                 key = key.substring(0, 255);
             }
+            //convert binary input into decimal
+            if(plainText.matches("^[0-1]+$")){
+                plainText = convertBinarytoDecimal(plainText);
+            }
             String[] arrayKey = new String[key.length()];
             //convert to decimal value in ascii
             for(int i = 0; i < key.length(); i++){
@@ -240,16 +244,15 @@ public class DashBoard extends javax.swing.JFrame {
             if(key.length() > 255){
                 key = key.substring(0, 255);
             }
+            //convert to decimal if input is binary 
+            if(cipherText.matches("^[0-1]+$")){
+                cipherText = convertBinarytoDecimal(cipherText);
+            }
             
             String[] arrayKey = new String[key.length()];
+            //convert to decimal value in ascii
             for(int i = 0; i < key.length(); i++){
-                try {
-                    arrayKey[i] = Integer.parseInt(String.valueOf(key.charAt(i)))+"";
-                    
-                } catch (Exception e) {
-                    arrayKey[i] = String.valueOf(key.codePointAt(i));
-                    
-                }
+                arrayKey[i] = String.valueOf(key.codePointAt(i));
             }
             //decryption
             initS_and_T_Array(arrayKey);
