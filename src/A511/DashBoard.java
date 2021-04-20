@@ -4,7 +4,18 @@
  * and open the template in the editor.
  */
 package A511;
-
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.FileInputStream;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 /**
  *
  * @author tbui48
@@ -247,7 +258,39 @@ public class DashBoard extends javax.swing.JFrame {
         return result.toString();
     }
 // </editor-fold> 
+        public static void ghiFiledocx(String cipherText,String filename) throws IOException {
+    // Create Blank document
+    XWPFDocument document = new XWPFDocument();
+    // Create new Paragraph
+    XWPFParagraph paragraph1 = document.createParagraph();
+    XWPFRun run = paragraph1.createRun();
+    run.setText(cipherText);
+
+    // Write the Document in file system
+    FileOutputStream out = new FileOutputStream(new File(filename));
+    document.write(out);
+    out.close();
+    document.close();
+    System.out.println("successully");
+  }
+   
     
+    public void docFiledocx(String filename){
+        // Create Blank document
+    try {
+      FileInputStream fis = new FileInputStream(filename);
+      XWPFDocument document = new XWPFDocument(OPCPackage.open(fis));
+      List<XWPFParagraph> paragraphList = document.getParagraphs();
+      for (XWPFParagraph paragraph : paragraphList) {
+        System.out.println(paragraph.getText());
+      }
+      
+      
+      document.close();
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+  }
     
     // <editor-fold defaultstate="collapsed" desc="Truong rewrite all thing">  
     //step1 finsih
@@ -520,28 +563,7 @@ public class DashBoard extends javax.swing.JFrame {
 //
 //                cipherText = tinhXOR(streamKey, plainText);
 //                tareaEncryptionResult.setText(cipherText);
-            } 
-    }//GEN-LAST:event_btnEncryptionActionPerformed
-
-    private void btnDecryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDecryptionActionPerformed
-        // TODO add your handling code here:
-        String cipherText = txtCipherText.getText().trim().replaceAll("\\s{1,}","");
-        String K = txtKeyDecryption.getText().trim().replaceAll("\\s{1,}","");
-        if("".equals(cipherText) || "".equals(K)){
-            JOptionPane.showMessageDialog(frame,"Key or plainText invalid");
-        }
-        else{
-            String plainText;
-        
-            cipherText = convertPlainTextToBinary(cipherText);
-            String streamKey = generateStreamKey(cipherText.length(), K);
-
-            plainText = tinhXOR(streamKey, cipherText);
-            tareaDecryptionResult.setText(plainText);
-        }
-    }//GEN-LAST:event_btnDecryptionActionPerformed
-
-         String plainTextB ="101000101010011";
+               String plainTextB ="101000101010011";
       String Streamkey = "1111101011";
       
       String[] chuoiPlainText = plainTextB.split("");
@@ -565,6 +587,27 @@ public class DashBoard extends javax.swing.JFrame {
         System.out.println(Arrays.toString(y_Register));
         System.out.println(Arrays.toString(z_Register));
         */
+    }//GEN-LAST:event_btnEncryptionActionPerformed
+
+    private void btnDecryptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDecryptionActionPerformed
+        // TODO add your handling code here:
+        String cipherText = txtCipherText.getText().trim().replaceAll("\\s{1,}","");
+        String K = txtKeyDecryption.getText().trim().replaceAll("\\s{1,}","");
+        if("".equals(cipherText) || "".equals(K)){
+            JOptionPane.showMessageDialog(frame,"Key or plainText invalid");
+        }
+        else{
+            String plainText;
+        
+            cipherText = convertPlainTextToBinary(cipherText);
+            String streamKey = generateStreamKey(cipherText.length(), K);
+
+            plainText = tinhXOR(streamKey, cipherText);
+            tareaDecryptionResult.setText(plainText);
+        }
+    }//GEN-LAST:event_btnDecryptionActionPerformed
+
+      
                                                  
     
     /**
